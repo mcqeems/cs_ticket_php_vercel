@@ -1,14 +1,10 @@
 <?php
-// 1. Load Composer Autoloader FIRST
 require __DIR__ . '/../vendor/autoload.php';
 
-// 2. Load Environment Variables SECOND
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
 
-// 3. Define the Session Handler (Now it works because Autoloader & Env are ready)
-// We need to use a try-catch block here just in case the DB connection fails
 try {
 	$client = \App\Configs\Database::getConnection();
 	$sessionCollection = $client->selectDatabase($_ENV['MONGODB_DATABASE'])->sessions;
@@ -55,8 +51,6 @@ try {
 
 	session_set_save_handler($handler, true);
 } catch (Exception $e) {
-	// If DB fails, we can't start a session, but we shouldn't crash the whole site immediately
-	// or we can just let it fail if sessions are critical.
 	error_log("Session handler error: " . $e->getMessage());
 }
 
@@ -85,7 +79,6 @@ if (!in_array($action, $publicRoutes) && !in_array($action, $apiRoutes)) {
 	AuthController::requireLogin();
 }
 
-// Handle API routes separately (no layout)
 if (in_array($action, $apiRoutes)) {
 	header('Content-Type: application/json');
 
@@ -104,12 +97,9 @@ if (in_array($action, $apiRoutes)) {
 	}
 }
 
-// Start output buffering to capture view content
 ob_start();
 
-// Route handling
 switch ($action) {
-	// Authentication routes
 	case 'login':
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$authController = new AuthController();
@@ -134,7 +124,6 @@ switch ($action) {
 		$authController = new AuthController();
 		$authController->logout();
 		break;
-	// Ticket Management
 	case 'tickets':
 		$ticketController = new TicketController();
 		$ticketController->index();
@@ -322,10 +311,8 @@ switch ($action) {
 		break;
 }
 
-// Capture the view content
 $content = ob_get_clean();
 
-// For login/register pages, use different layout
 $isAuthPage = in_array($action, $publicRoutes);
 ?>
 
@@ -336,10 +323,8 @@ $isAuthPage = in_array($action, $publicRoutes);
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>CS Ticket - Customer Support System</title>
-	<link rel="icon" type="image/x-icon" href="<?= __DIR__ . '/../public/favicon.ico' ?>">
-	<!-- Bootstrap CSS -->
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Bootstrap Icons -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 	<style>
 		body {
@@ -358,7 +343,6 @@ $isAuthPage = in_array($action, $publicRoutes);
 
 <body>
 	<?php if (!$isAuthPage): ?>
-		<!-- Navigation -->
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="index.php?action=dashboard">
@@ -420,19 +404,16 @@ $isAuthPage = in_array($action, $publicRoutes);
 		</nav>
 	<?php endif; ?>
 
-	<!-- Main Content -->
 	<div class="container-fluid content-wrapper py-4">
 		<div class="container<?= $isAuthPage ? '' : '' ?>">
 			<?php echo $content; ?>
 		</div>
 	</div>
 
-	<!-- Footer -->
 	<footer class="text-muted text-center py-3 mt-auto">
 		<p class="mb-0">&copy; 2026 CS Ticket System. All rights reserved.</p>
 	</footer>
 
-	<!-- Bootstrap JS -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
