@@ -1,10 +1,67 @@
 <?php
-session_start();
-require 'vendor/autoload.php';
+// 1. Load Composer Autoloader FIRST
+require __DIR__ . '/../vendor/autoload.php';
 
-// Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// 2. Load Environment Variables SECOND
+use Dotenv\Dotenv;
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->safeLoad();
+
+// 3. Define the Session Handler (Now it works because Autoloader & Env are ready)
+// We need to use a try-catch block here just in case the DB connection fails
+try {
+	$client = \App\Configs\Database::getConnection();
+	$sessionCollection = $client->selectDatabase($_ENV['MONGODB_DATABASE'])->sessions;
+
+	$handler = new class ($sessionCollection) implements SessionHandlerInterface {
+		private $collection;
+		public function __construct($collection)
+		{
+			$this->collection = $collection; }
+		public function open($path, $name): bool
+		{
+			return true; }
+		public function close(): bool
+		{
+			return true; }
+		public function read($id): string
+		{
+			$doc = $this->collection->findOne(['_id' => $id]);
+			return $doc ? (string) $doc['data'] : '';
+		}
+		public function write($id, $data): bool
+		{
+			$this->collection->updateOne(
+				['_id' => $id],
+				[
+					'$set' => [
+						'data' => $data,
+						'timestamp' => new \MongoDB\BSON\UTCDateTime()
+					]
+				],
+				['upsert' => true]
+			);
+			return true;
+		}
+		public function destroy($id): bool
+		{
+			$this->collection->deleteOne(['_id' => $id]);
+			return true;
+		}
+		public function gc($max_lifetime): int
+		{
+			return 1; }
+	};
+
+	session_set_save_handler($handler, true);
+} catch (Exception $e) {
+	// If DB fails, we can't start a session, but we shouldn't crash the whole site immediately
+	// or we can just let it fail if sessions are critical.
+	error_log("Session handler error: " . $e->getMessage());
+}
+
+// 4. Start the Session
+session_start();
 
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
