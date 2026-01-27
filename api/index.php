@@ -63,6 +63,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\TicketController;
 use App\Controllers\ProfileController;
 use App\Controllers\KnowledgeBaseController;
+use App\Controllers\HelpTopicsController;
 use App\Models\HelpTopicModel;
 
 // Determine the route
@@ -304,6 +305,52 @@ switch ($action) {
 		$departmentController = new \App\Controllers\DepartmentController();
 		$departmentController->deleteDepartment();
 		break;
+
+	// Admin only - Help Topics management
+	case 'help_topics':
+		AuthController::requireRole('admin');
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->index();
+		break;
+
+	case 'help_topic_detail':
+		AuthController::requireRole('admin');
+		$topicId = $_GET['id'] ?? null;
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->detail($topicId);
+		break;
+
+	case 'help_topic_create':
+		AuthController::requireRole('admin');
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->create();
+		break;
+
+	case 'help_topic_store':
+		AuthController::requireRole('admin');
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->store();
+		break;
+
+	case 'help_topic_edit':
+		AuthController::requireRole('admin');
+		$topicId = $_GET['id'] ?? null;
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->edit($topicId);
+		break;
+
+	case 'help_topic_update':
+		AuthController::requireRole('admin');
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->updateTopic();
+		break;
+
+	case 'help_topic_delete':
+		AuthController::requireRole('admin');
+		$helpTopicsController = new HelpTopicsController();
+		$helpTopicsController->deleteTopic();
+		break;
+
 
 	default:
 		$dashboardController = new DashboardController();
