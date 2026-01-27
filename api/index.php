@@ -390,7 +390,7 @@ $isAuthPage = in_array($action, $publicRoutes);
 
 <body>
 	<?php if (!$isAuthPage): ?>
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="index.php?action=dashboard">
 					<i class="bi bi-ticket-perforated"></i> CS Ticket System
@@ -451,7 +451,7 @@ $isAuthPage = in_array($action, $publicRoutes);
 		</nav>
 	<?php endif; ?>
 
-	<div class="container-fluid content-wrapper py-4">
+	<div class="container-fluid mt-5 content-wrapper py-4">
 		<div class="container<?= $isAuthPage ? '' : '' ?>">
 			<?php echo $content; ?>
 		</div>
