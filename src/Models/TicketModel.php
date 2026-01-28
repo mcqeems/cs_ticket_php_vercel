@@ -461,5 +461,35 @@ class TicketModel
 
 		return $stats;
 	}
+
+	/**
+	 * Get recent activity for a specific user
+	 */
+	public function getUserRecentActivity($userId, $limit = 10)
+	{
+		$activity = $this->db->ticket_history->aggregate([
+			['$match' => ['user_id' => new ObjectId($userId)]],
+			[
+				'$lookup' => [
+					'from' => 'tickets',
+					'localField' => 'ticket_id',
+					'foreignField' => '_id',
+					'as' => 'ticket'
+				]
+			],
+			['$sort' => ['timestamp' => -1]],
+			['$limit' => $limit],
+			[
+				'$project' => [
+					'action' => 1,
+					'message' => 1,
+					'timestamp' => 1,
+					'ticket' => ['$arrayElemAt' => ['$ticket', 0]]
+				]
+			]
+		])->toArray();
+
+		return $activity;
+	}
 }
 ?>

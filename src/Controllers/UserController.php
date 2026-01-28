@@ -2,14 +2,17 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\TicketModel;
 
 class UserController
 {
 	private $model;
+	private $ticketModel;
 
 	public function __construct()
 	{
 		$this->model = new UserModel();
+		$this->ticketModel = new TicketModel();
 	}
 
 	public function index()
@@ -30,6 +33,18 @@ class UserController
 			header('Location: index.php?action=users');
 			exit;
 		}
+
+		// Get ticket statistics based on user role
+		if ($user['role'] === 'client') {
+			// For clients, get tickets they created (user_id)
+			$ticketStats = $this->ticketModel->getClientStatistics($userId);
+		} else {
+			// For support agents and admins, get tickets assigned to them
+			$ticketStats = $this->ticketModel->getStatistics(['assigned_to' => $userId]);
+		}
+
+		// Get recent activity for this user
+		$recentActivity = $this->ticketModel->getUserRecentActivity($userId, 10);
 
 		// Load the user detail view
 		$viewPath = __DIR__ . '/../Views/user_detail.php';
