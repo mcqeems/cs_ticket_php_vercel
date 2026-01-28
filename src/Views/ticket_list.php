@@ -3,7 +3,7 @@
 		<h2><i class="bi bi-ticket-perforated"></i> Tickets</h2>
 	</div>
 	<div class="col-auto">
-		<?php if ($_SESSION['user_role'] === 'client' || $_SESSION['user_role'] === 'admin'): ?>
+		<?php if ($_SESSION['user_role'] === 'client'): ?>
 			<a href="index.php?action=ticket_create" class="btn btn-primary">
 				<i class="bi bi-plus-circle"></i> Create New Ticket
 			</a>

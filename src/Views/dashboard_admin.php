@@ -78,8 +78,8 @@
 			</div>
 			<div class="card-body">
 				<div class="d-flex gap-2 flex-wrap">
-					<a href="index.php?action=ticket_create" class="btn btn-primary">
-						<i class="bi bi-plus-circle"></i> Create Ticket
+					<a href="index.php?action=tickets" class="btn btn-primary">
+						<i class="bi bi-plus-circle"></i> Manage Tickets
 					</a>
 					<a href="index.php?action=users" class="btn btn-info">
 						<i class="bi bi-people"></i> Manage Users
@@ -132,7 +132,8 @@
 											</a>
 										</td>
 										<td>
-											<?= htmlspecialchars(substr($ticket['subject'], 0, 40)) ?>		<?= strlen($ticket['subject']) > 40 ? '...' : '' ?>
+											<?= htmlspecialchars(substr($ticket['subject'], 0, 40)) ?>
+											<?= strlen($ticket['subject']) > 40 ? '...' : '' ?>
 										</td>
 										<td>
 											<span
