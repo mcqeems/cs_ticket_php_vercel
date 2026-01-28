@@ -66,18 +66,13 @@ $pageTitle = $isEdit ? 'Edit User' : 'Create New User';
 						<label for="department" class="form-label">Department</label>
 						<select class="form-select" id="department" name="department">
 							<option value="">Select Department</option>
-							<option value="Technical Support" <?= ($isEdit && isset($user['department']) && $user['department'] === 'Technical Support') ? 'selected' : '' ?>>
-								Technical Support
-							</option>
-							<option value="Billing" <?= ($isEdit && isset($user['department']) && $user['department'] === 'Billing') ? 'selected' : '' ?>>
-								Billing
-							</option>
-							<option value="Sales" <?= ($isEdit && isset($user['department']) && $user['department'] === 'Sales') ? 'selected' : '' ?>>
-								Sales
-							</option>
-							<option value="General Inquiries" <?= ($isEdit && isset($user['department']) && $user['department'] === 'General Inquiries') ? 'selected' : '' ?>>
-								General Inquiries
-							</option>
+							<?php if (isset($departments) && !empty($departments)): ?>
+								<?php foreach ($departments as $dept): ?>
+									<option value="<?= htmlspecialchars($dept['_id']) ?>" <?= ($isEdit && isset($user['department']) && (string) $user['department'] === (string) $dept['_id']) ? 'selected' : '' ?>>
+										<?= htmlspecialchars($dept['name']) ?>
+									</option>
+								<?php endforeach; ?>
+							<?php endif; ?>
 						</select>
 						<small class="form-text text-muted">Only applicable for Support Agents</small>
 					</div>

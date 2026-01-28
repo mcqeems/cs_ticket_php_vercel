@@ -3,16 +3,19 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\TicketModel;
+use App\Models\DepartmentModel;
 
 class UserController
 {
 	private $model;
 	private $ticketModel;
+	private $departmentModel;
 
 	public function __construct()
 	{
 		$this->model = new UserModel();
 		$this->ticketModel = new TicketModel();
+		$this->departmentModel = new DepartmentModel();
 	}
 
 	public function index()
@@ -53,6 +56,9 @@ class UserController
 
 	public function create()
 	{
+		// Get all active departments
+		$departments = $this->departmentModel->getAll(true);
+
 		// Show create form
 		$viewPath = __DIR__ . '/../Views/user_form.php';
 		include $viewPath;
@@ -116,6 +122,9 @@ class UserController
 			header('Location: index.php?action=users');
 			exit;
 		}
+
+		// Get all active departments
+		$departments = $this->departmentModel->getAll(true);
 
 		// Load edit form
 		$viewPath = __DIR__ . '/../Views/user_form.php';
