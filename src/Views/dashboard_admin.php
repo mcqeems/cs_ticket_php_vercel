@@ -175,8 +175,12 @@
 								<div>
 									<i class="bi bi-person-badge"></i>
 									<?= htmlspecialchars($agent['name'] ?? 'N/A') ?>
-									<?php if (isset($agent['department'])): ?>
-										<br><small class="text-muted"><?= htmlspecialchars($agent['department']) ?></small>
+									<?php if (isset($agent['department']) && !empty($agent['department'])): ?>
+										<?php
+										$deptId = is_object($agent['department']) ? (string) $agent['department'] : $agent['department'];
+										$deptName = $departmentMap[$deptId] ?? 'Unknown Department';
+										?>
+										<br><small class="text-muted"><?= htmlspecialchars($deptName) ?></small>
 									<?php endif; ?>
 								</div>
 								<span class="badge bg-success rounded-pill">Active</span>

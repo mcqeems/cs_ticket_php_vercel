@@ -23,9 +23,14 @@ class UserModel
 	/**
 	 * Get users by role
 	 */
-	public function getUsersByRole($role)
+	public function getUsersByRole($role, $limit = null)
 	{
-		return $this->collection->find(['role' => $role])->toArray();
+		$options = [];
+		if ($limit !== null) {
+			$options['limit'] = $limit;
+		}
+
+		return $this->collection->find(['role' => $role], $options)->toArray();
 	}
 
 	/**

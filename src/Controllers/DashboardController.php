@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\TicketModel;
 use App\Models\UserModel;
+use App\Models\DepartmentModel;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
@@ -10,11 +11,13 @@ class DashboardController
 {
 	private $ticketModel;
 	private $userModel;
+	private $departmentModel;
 
 	public function __construct()
 	{
 		$this->ticketModel = new TicketModel();
 		$this->userModel = new UserModel();
+		$this->departmentModel = new DepartmentModel();
 	}
 
 	public function index()
@@ -41,11 +44,18 @@ class DashboardController
 		// Get statistics
 		$stats = $this->ticketModel->getStatistics();
 
-		// Get recent tickets (last 10)
-		$recentTickets = $this->ticketModel->getTickets(['limit' => 10]);
+		// Get recent tickets (last 5)
+		$recentTickets = $this->ticketModel->getTickets(['limit' => 5]);
 
 		// Get active agents
-		$activeAgents = $this->userModel->getUsersByRole('support_agent');
+		$activeAgents = $this->userModel->getUsersByRole('support_agent', 5);
+
+		// Get all departments and create a lookup map
+		$departments = $this->departmentModel->getAll(false);
+		$departmentMap = [];
+		foreach ($departments as $dept) {
+			$departmentMap[(string) $dept['_id']] = $dept['name'];
+		}
 
 		$viewPath = __DIR__ . '/../Views/dashboard_admin.php';
 		include $viewPath;
