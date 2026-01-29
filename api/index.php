@@ -54,7 +54,6 @@ try {
 	error_log("Session handler error: " . $e->getMessage());
 }
 
-// 4. Start the Session
 session_start();
 
 use App\Controllers\AuthController;
